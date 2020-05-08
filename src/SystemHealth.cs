@@ -1,4 +1,4 @@
-﻿namespace Ser.Engine.Diagnostics
+﻿namespace Ser.Diagnostics
 {
     #region Usings
     using NLog;

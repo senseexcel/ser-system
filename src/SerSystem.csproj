@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>Ser.Engine.Diagnostics</RootNamespace>
+    <RootNamespace>Ser.Diagnostics</RootNamespace>
     <Authors>akquinet finance &amp; controlling GmbH</Authors>
     <AssemblyName>SerSystem</AssemblyName>
     <Copyright>Copyright (c) $([System.DateTime]::Today.ToString('yyyy'))</Copyright>
