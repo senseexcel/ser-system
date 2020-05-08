@@ -6,7 +6,7 @@
     <Authors>akquinet finance &amp; controlling GmbH</Authors>
     <AssemblyName>SerSystem</AssemblyName>
     <Copyright>Copyright (c) $([System.DateTime]::Today.ToString('yyyy'))</Copyright>
-    <!--<Version>$(GitVersion_InformationalVersion)</Version>-->
+    <Version>$(GitVersion_InformationalVersion)</Version>
   </PropertyGroup>
 
   <ItemGroup>
