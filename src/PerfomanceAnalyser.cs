@@ -33,69 +33,97 @@
         #region Public Methods
         public void Start()
         {
-            starttime = DateTime.Now;
+            try
+            {
+                starttime = DateTime.Now;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("The perfomance analyser could not start.", ex);
+            }
         }
 
         public void Stop(string analyserFolder)
         {
-            if (!Directory.Exists(analyserFolder))
-                throw new Exception($"The perfomance analyser folder {analyserFolder} does not exists.");
-
-            var results = new List<AnalyserCheckPoint>();
-            var files = Directory.GetFiles(analyserFolder, "*.perfc", SearchOption.TopDirectoryOnly);
-            foreach (var file in files)
+            try
             {
-                var json = File.ReadAllText(file, Encoding.UTF8);
-                results.AddRange(JsonConvert.DeserializeObject<List<AnalyserCheckPoint>>(json));
-                File.Delete(file);
-            }
+                if (!Directory.Exists(analyserFolder))
+                    throw new Exception($"The perfomance analyser folder {analyserFolder} does not exists.");
 
-            foreach (var item in results)
-                item.SortSpan = (item.Stemp - starttime).TotalSeconds;
-
-            results = results.OrderBy(c => c.SortSpan).ToList();
-
-            var savePath = Path.Combine(analyserFolder, $"analyser.perf");
-            using (var csvWriter = new StreamWriter(savePath, false, Encoding.UTF8))
-            {
-                var headers = new List<string> { "Time", "Modul", "Action", "Message" };
-                csvWriter.WriteLine(String.Join(Options.Seperator, headers));
-                foreach (var checkpoint in results)
+                var results = new List<AnalyserCheckPoint>();
+                var files = Directory.GetFiles(analyserFolder, "*.perfc", SearchOption.TopDirectoryOnly);
+                foreach (var file in files)
                 {
-                    var rows = new List<string>
+                    var json = File.ReadAllText(file, Encoding.UTF8);
+                    results.AddRange(JsonConvert.DeserializeObject<List<AnalyserCheckPoint>>(json));
+                    File.Delete(file);
+                }
+
+                foreach (var item in results)
+                    item.SortSpan = (item.Stemp - starttime).TotalSeconds;
+
+                results = results.OrderBy(c => c.SortSpan).ToList();
+
+                var savePath = Path.Combine(analyserFolder, $"analyser.perf");
+                using (var csvWriter = new StreamWriter(savePath, false, Encoding.UTF8))
+                {
+                    var headers = new List<string> { "Time", "Modul", "Action", "Message" };
+                    csvWriter.WriteLine(String.Join(Options.Seperator, headers));
+                    foreach (var checkpoint in results)
+                    {
+                        var rows = new List<string>
                         {
                             checkpoint.SortSpan.ToString(),
                             checkpoint.Modulname,
                             checkpoint.Action,
                             checkpoint.Message
                         };
-                    csvWriter.WriteLine(String.Join(Options.Seperator, rows));
+                        csvWriter.WriteLine(String.Join(Options.Seperator, rows));
+                    }
+                    csvWriter.Flush();
                 }
-                csvWriter.Flush();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("The perfomance analyser could not stop.", ex);
             }
         }
 
         public void SetCheckPoint(string action, string message)
         {
-            checkPoints.Push(new AnalyserCheckPoint()
+            try
             {
-                Stemp = DateTime.Now,
-                Action = action,
-                Message = message
-            });
+                checkPoints.Push(new AnalyserCheckPoint()
+                {
+                    Stemp = DateTime.Now,
+                    Action = action,
+                    Message = message
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("The perfomance analyser could not add the checkpiont.", ex);
+            }
         }
 
         public void SaveCheckPoints(string saveFolder, string modulName)
         {
-            if (String.IsNullOrEmpty(saveFolder))
-                throw new Exception("The perfomance analyser has no folder path.");
-            lock (locker)
+            try
             {
-                foreach (var checkPoint in checkPoints)
-                    checkPoint.Modulname = modulName;
-                var savePath = Path.Combine(saveFolder, $"{modulName}.perfc");
-                var json = JsonConvert.SerializeObject(checkPoints, Formatting.Indented);
-                File.WriteAllText(savePath, json, Encoding.UTF8);
+                if (String.IsNullOrEmpty(saveFolder))
+                    throw new Exception("The perfomance analyser has no folder path.");
+                lock (locker)
+                {
+                    foreach (var checkPoint in checkPoints)
+                        checkPoint.Modulname = modulName;
+                    var savePath = Path.Combine(saveFolder, $"{modulName}.perfc");
+                    var json = JsonConvert.SerializeObject(checkPoints, Formatting.Indented);
+                    File.WriteAllText(savePath, json, Encoding.UTF8);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("The perfomance analyser could not save checkpionts.", ex);
             }
         }
         #endregion
