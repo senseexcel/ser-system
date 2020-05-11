@@ -43,15 +43,15 @@
             }
         }
 
-        public void Stop(string analyserFolder)
+        public void Stop()
         {
             try
             {
-                if (!Directory.Exists(analyserFolder))
-                    throw new Exception($"The perfomance analyser folder {analyserFolder} does not exists.");
+                if (!Directory.Exists(Options.AnalyserFolder))
+                    throw new Exception($"The perfomance analyser folder {Options.AnalyserFolder} does not exists.");
 
                 var results = new List<AnalyserCheckPoint>();
-                var files = Directory.GetFiles(analyserFolder, "*.perfc", SearchOption.TopDirectoryOnly);
+                var files = Directory.GetFiles(Options.AnalyserFolder, "*.perfc", SearchOption.TopDirectoryOnly);
                 foreach (var file in files)
                 {
                     var json = File.ReadAllText(file, Encoding.UTF8);
@@ -64,7 +64,7 @@
 
                 results = results.OrderBy(c => c.SortSpan).ToList();
 
-                var savePath = Path.Combine(analyserFolder, $"analyser.perf");
+                var savePath = Path.Combine(Options.AnalyserFolder, $"analyser.perf");
                 using (var csvWriter = new StreamWriter(savePath, false, Encoding.UTF8))
                 {
                     var headers = new List<string> { "Time", "Modul", "Action", "Message" };
@@ -106,17 +106,17 @@
             }
         }
 
-        public void SaveCheckPoints(string saveFolder, string modulName)
+        public void SaveCheckPoints(string modulName)
         {
             try
             {
-                if (String.IsNullOrEmpty(saveFolder))
+                if (String.IsNullOrEmpty(Options.AnalyserFolder))
                     throw new Exception("The perfomance analyser has no folder path.");
                 lock (locker)
                 {
                     foreach (var checkPoint in checkPoints)
                         checkPoint.Modulname = modulName;
-                    var savePath = Path.Combine(saveFolder, $"{modulName}.perfc");
+                    var savePath = Path.Combine(Options.AnalyserFolder, $"{modulName}.perfc");
                     var json = JsonConvert.SerializeObject(checkPoints, Formatting.Indented);
                     File.WriteAllText(savePath, json, Encoding.UTF8);
                 }
@@ -133,6 +133,7 @@
     public class AnalyserOptions
     {
         public char Seperator { get; set; } = '|';
+        public string AnalyserFolder { get; set; } = Path.Combine(Path.GetTempPath(), "PerfAnalyser");
     }
 
     internal class AnalyserCheckPoint
