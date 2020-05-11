@@ -47,11 +47,12 @@
         {
             try
             {
-                if (!Directory.Exists(Options.AnalyserFolder))
-                    throw new Exception($"The perfomance analyser folder {Options.AnalyserFolder} does not exists.");
+                var analyserFolder = Path.Combine(Options.AnalyserFolder, "PerfAnalyser");
+                if (!Directory.Exists(analyserFolder))
+                    throw new Exception($"The perfomance analyser folder {analyserFolder} does not exists.");
 
                 var results = new List<AnalyserCheckPoint>();
-                var files = Directory.GetFiles(Options.AnalyserFolder, "*.perfc", SearchOption.TopDirectoryOnly);
+                var files = Directory.GetFiles(analyserFolder, "*.perfc", SearchOption.TopDirectoryOnly);
                 foreach (var file in files)
                 {
                     var json = File.ReadAllText(file, Encoding.UTF8);
@@ -59,6 +60,7 @@
                     File.Delete(file);
                 }
 
+                Directory.Delete(analyserFolder, true);
                 foreach (var item in results)
                     item.SortSpan = (item.Stemp - starttime).TotalSeconds;
 
@@ -110,13 +112,13 @@
         {
             try
             {
-                if (String.IsNullOrEmpty(Options.AnalyserFolder))
-                    throw new Exception("The perfomance analyser has no folder path.");
+                var analyserFolder = Path.Combine(Options.AnalyserFolder, "PerfAnalyser");
                 lock (locker)
                 {
+                    Directory.CreateDirectory(analyserFolder);
                     foreach (var checkPoint in checkPoints)
                         checkPoint.Modulname = modulName;
-                    var savePath = Path.Combine(Options.AnalyserFolder, $"{modulName}.perfc");
+                    var savePath = Path.Combine(analyserFolder, $"{modulName}.perfc");
                     var json = JsonConvert.SerializeObject(checkPoints, Formatting.Indented);
                     File.WriteAllText(savePath, json, Encoding.UTF8);
                 }
