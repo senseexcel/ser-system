@@ -4,6 +4,7 @@
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Reflection;
@@ -69,7 +70,7 @@
                 var savePath = Path.Combine(Options.AnalyserFolder, $"analyser.perf");
                 using (var csvWriter = new StreamWriter(savePath, false, Encoding.UTF8))
                 {
-                    var headers = new List<string> { "Time", "Modul", "Action", "Message" };
+                    var headers = new List<string> { "Time", "Modul", "Action", "Message", "CPUTime", "Memory" };
                     csvWriter.WriteLine(String.Join(Options.Seperator, headers));
                     foreach (var checkpoint in results)
                     {
@@ -78,7 +79,9 @@
                             checkpoint.SortSpan.ToString(),
                             checkpoint.Modulname,
                             checkpoint.Action,
-                            checkpoint.Message
+                            checkpoint.Message,
+                            checkpoint.CPUTime.ToString(),
+                            checkpoint.Memory.ToString()
                         };
                         csvWriter.WriteLine(String.Join(Options.Seperator, rows));
                     }
@@ -95,11 +98,14 @@
         {
             try
             {
+                var process = Process.GetCurrentProcess();
                 checkPoints.Push(new AnalyserCheckPoint()
                 {
                     Stemp = DateTime.Now,
                     Action = action,
-                    Message = message
+                    Message = message,
+                    CPUTime = process.TotalProcessorTime.TotalSeconds,
+                    Memory = process.WorkingSet64
                 });
             }
             catch (Exception ex)
@@ -145,6 +151,8 @@
         public string Modulname { get; set; }
         public string Message { get; set; }
         public DateTime Stemp { get; set; }
+        public long Memory { get; set; }
+        public double CPUTime { get; set; }
     }
     #endregion
 }
