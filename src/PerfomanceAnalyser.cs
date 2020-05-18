@@ -124,6 +124,8 @@
                     Directory.CreateDirectory(analyserFolder);
                     foreach (var checkPoint in checkPoints)
                         checkPoint.Modulname = modulName;
+                    if (!String.IsNullOrEmpty(Options.TaskId))
+                        modulName = $"{modulName}_{Options.TaskId}";
                     var savePath = Path.Combine(analyserFolder, $"{modulName}.perfc");
                     var json = JsonConvert.SerializeObject(checkPoints, Formatting.Indented);
                     File.WriteAllText(savePath, json, Encoding.UTF8);
@@ -141,6 +143,7 @@
     public class AnalyserOptions
     {
         public char Seperator { get; set; } = '|';
+        public string TaskId { get; set; }
         public string AnalyserFolder { get; set; } = Path.Combine(Path.GetTempPath(), "PerfAnalyser");
     }
 
