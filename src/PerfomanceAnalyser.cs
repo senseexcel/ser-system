@@ -94,6 +94,18 @@
             }
         }
 
+        public void ClearCheckPoints()
+        {
+            try
+            {
+                checkPoints.Clear();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Checkpoints could not clear.", ex);
+            }
+        }
+
         public void SetCheckPoint(string action, string message)
         {
             try
