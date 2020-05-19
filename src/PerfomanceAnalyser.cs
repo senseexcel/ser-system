@@ -76,7 +76,7 @@
                     {
                         var rows = new List<string>
                         {
-                            checkpoint.SortSpan.ToString(),
+                            checkpoint.SortSpan.ToString("0.####"),
                             checkpoint.Modulname,
                             checkpoint.Action,
                             checkpoint.Message,
