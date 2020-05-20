@@ -70,7 +70,7 @@
                 var savePath = Path.Combine(Options.AnalyserFolder, $"analyser.perf");
                 using (var csvWriter = new StreamWriter(savePath, false, Encoding.UTF8))
                 {
-                    var headers = new List<string> { "Time", "Modul", "Action", "Message", "CPUTime", "Memory" };
+                    var headers = new List<string> { "Time", "Modul", "Action", "Message", "TaskId", "CPUTime", "Memory" };
                     csvWriter.WriteLine(String.Join(Options.Seperator, headers));
                     foreach (var checkpoint in results)
                     {
@@ -80,6 +80,7 @@
                             checkpoint.Modulname,
                             checkpoint.Action,
                             checkpoint.Message,
+                            checkpoint.TaskId,
                             checkpoint.CPUTime.ToString(),
                             checkpoint.Memory.ToString()
                         };
@@ -106,7 +107,7 @@
             }
         }
 
-        public void SetCheckPoint(string action, string message)
+        public void SetCheckPoint(string action, string message, string taskId = "00000000-0000-0000-0000-000000000000")
         {
             try
             {
@@ -117,7 +118,8 @@
                     Action = action,
                     Message = message,
                     CPUTime = process.TotalProcessorTime.TotalSeconds,
-                    Memory = process.WorkingSet64
+                    Memory = process.WorkingSet64,
+                    TaskId = taskId
                 });
             }
             catch (Exception ex)
@@ -168,6 +170,7 @@
         public DateTime Stemp { get; set; }
         public long Memory { get; set; }
         public double CPUTime { get; set; }
+        public string TaskId { get; set; }
     }
     #endregion
 }
