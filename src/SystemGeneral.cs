@@ -37,5 +37,10 @@
                 throw new Exception("LogManager contains no Configuration or there are no named targets");
             }
         }
+
+        public static string GetAssemblyVersion(Type type)
+        {
+            return type.Assembly.GetName().Version.ToString();
+        }
     }
 }

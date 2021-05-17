@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -6,20 +6,20 @@
     <Authors>akquinet finance &amp; controlling GmbH</Authors>
     <AssemblyName>SerSystem</AssemblyName>
     <Copyright>Copyright (c) $([System.DateTime]::Today.ToString('yyyy'))</Copyright>
-    <Version>$(GitVersion_InformationalVersion)</Version>
+    <AssemblyVersion>5.1.2.0</AssemblyVersion>
+    <FileVersion>5.1.2.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitVersionTask" Version="5.5.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="NLog" Version="4.7.7" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="NLog" Version="4.7.9" />
   </ItemGroup>
 
-  <Target Name="GitVersion" BeforeTargets="AfterBuild">
-    <Message Importance="High" Text="++++++ GitVersion: $(GitVersion_InformationalVersion) ++++++" />
+  <Target Name="ShowAssemblyVersion" BeforeTargets="AfterBuild">
+    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+      <Output TaskParameter="Assemblies" ItemName="MyAssemblyIdentities" />
+    </GetAssemblyIdentity>
+    <Message Importance="High" Text="++++++ AssemblyVersion: %(MyAssemblyIdentities.Version) ++++++" />
   </Target>
   
 </Project>
