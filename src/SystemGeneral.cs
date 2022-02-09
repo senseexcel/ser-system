@@ -3,6 +3,7 @@
     #region Usings
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.IO;
     using System.Text;
     using NLog;
@@ -41,6 +42,13 @@
         public static string GetAssemblyVersion(Type type)
         {
             return type.Assembly.GetName().Version.ToString();
+        }
+
+        public static bool IsNumeric(string input, NumberStyles numberStyle)
+        {
+            if (input.StartsWith("0"))
+                return false;
+            return Double.TryParse(input, numberStyle, CultureInfo.CurrentCulture, out _);
         }
     }
 }
