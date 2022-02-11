@@ -3,6 +3,8 @@
     #region Usings
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Drawing;
     using System.Globalization;
     using System.IO;
     using System.Text;
@@ -49,6 +51,11 @@
             if (input.StartsWith("0"))
                 return false;
             return Double.TryParse(input, numberStyle, CultureInfo.CurrentCulture, out _);
+        }
+
+        public static byte[] ImageToByteArray(Image img)
+        {
+            return (byte[])TypeDescriptor.GetConverter(img).ConvertTo(img, typeof(byte[]));
         }
     }
 }
