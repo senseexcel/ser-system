@@ -2,9 +2,9 @@
 {
     #region Usings
     using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
+    using System.ComponentModel;
+    using System.Drawing;
+    using System.Globalization;
     using NLog;
     using NLog.Targets;
     using NLog.Targets.Wrappers;
@@ -41,6 +41,18 @@
         public static string GetAssemblyVersion(Type type)
         {
             return type.Assembly.GetName().Version.ToString();
+        }
+
+        public static bool IsNumeric(string input, NumberStyles numberStyle)
+        {
+            if (input.StartsWith("0"))
+                return false;
+            return Double.TryParse(input, numberStyle, CultureInfo.CurrentCulture, out _);
+        }
+
+        public static byte[] ImageToByteArray(Image img)
+        {
+            return (byte[])TypeDescriptor.GetConverter(img).ConvertTo(img, typeof(byte[]));
         }
     }
 }
