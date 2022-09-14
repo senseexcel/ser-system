@@ -5,6 +5,8 @@
     using System.ComponentModel;
     using System.Drawing;
     using System.Globalization;
+    using System.IO;
+    using System.Reflection;
     using NLog;
     using NLog.Targets;
     using NLog.Targets.Wrappers;
@@ -53,6 +55,25 @@
         public static byte[] ImageToByteArray(Image img)
         {
             return (byte[])TypeDescriptor.GetConverter(img).ConvertTo(img, typeof(byte[]));
+        }
+
+        public static string GetFullPathFromApp(string path)
+        {
+            try
+            {
+                if (String.IsNullOrEmpty(path))
+                    return null;
+                if (path.StartsWith("/"))
+                    return path;
+                if (!path.StartsWith("\\\\") && !path.Contains(":") && !path.StartsWith("%"))
+                    path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location).TrimEnd('\\'), path.TrimStart('\\'));
+                path = Environment.ExpandEnvironmentVariables(path);
+                return Path.GetFullPath(path);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"The full path '{path}' of the app could not resolve.", ex);
+            }
         }
     }
 }
